@@ -14,14 +14,13 @@
 
 mas sma_suprimentos {
 
-	agent bob
-    agent   alice
-    agent company_A {
-    	instances: 3
-    }
-    agent company_B {
-    	instances: 3
-    }
+	agent c
+	agent p {
+		instances: 3
+	}
+	agent pr
+	agent pn
+	
     
 
 }
