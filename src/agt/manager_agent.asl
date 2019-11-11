@@ -36,7 +36,8 @@ last_permission_id(0).
 	 	N = P.
 
 +buy(Id) 
-	<- .print("Recebi autorização para compra do suprimento: ", Id).
+	<- .print("Recebi autorização para compra do suprimento: ", Id)
+	.send(comprador, achieve, startCNP(Id, buy(arroz))).
 
 	 	
 { include("$jacamoJar/templates/common-cartago.asl") }

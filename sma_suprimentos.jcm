@@ -16,7 +16,10 @@ mas sma_suprimentos {
 
 	agent monitor_estoque_agent
 	agent manager_agent
+	agent comprador
+	agent fornecedor {
+		instances: 5
+	}
     
-
 }
 

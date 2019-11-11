@@ -6,7 +6,7 @@ price(Task, X) :- .random(R) & X = (10 * R) + 100.
 
 /* Initial goals */
 
-plays(initiator, c).
+plays(initiator, comprador).
 
 /* Plans */
 

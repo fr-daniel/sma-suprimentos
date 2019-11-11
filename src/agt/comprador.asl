@@ -9,8 +9,6 @@ all_proposals_received(CNPId) :- .count(introduction(participant, _), NP) &
 
 /* Initial goals */
 
-!startCNP(1, fix(computer_123)).
-
 /* Plans */
 
 +!startCNP(Id, Object) 	
@@ -19,8 +17,8 @@ all_proposals_received(CNPId) :- .count(introduction(participant, _), NP) &
 		.findall(Name, introduction(participant, Name), LP);
 		.print("Enviando CFP para ", LP);
 		.send(LP, tell, cfp(Id, Object));
-		.concat("+!contract(", Id ,")", Event);
-		.at("agora +4 segundos", Event).
+		.concat("+!contract(", Id ,")", Event).
+//		.at("agora +4 segundos", Event).
 
 @r1 +propose(CNPId, Offer) : cnp_state(CNPId, propose) & all_proposals_received(CNPId)
 	<-	!contract(CNPId).	
