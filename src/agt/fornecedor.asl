@@ -18,7 +18,7 @@ plays(initiator, c).
 		.send(A, tell, propose(CNPId, Offer)). 
 		
 @r1 +accept_proposal(CNPId) : proposal(CNPId, Task, Offer)
-	<- .print("My proposal ", Offer, " won CNP ", CNPId, " for ", Task, "!").
+	<- .print("Minha proposta ", Offer, " ganhou CNP ", CNPId, " para ", Task, "!").
 
 @r2 +reject_proposal(CNPId) 
 	<- .print("I lost CNP ", CNPId, ".");

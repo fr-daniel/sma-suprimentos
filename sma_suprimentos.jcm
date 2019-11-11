@@ -14,13 +14,8 @@
 
 mas sma_suprimentos {
 
-	agent c
-	agent p {
-		instances: 3
-	}
-	agent pr
-	agent pn
-	
+	agent monitor_estoque_agent
+	agent manager_agent
     
 
 }

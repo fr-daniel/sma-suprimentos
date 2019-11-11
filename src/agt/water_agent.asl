@@ -1,19 +1,14 @@
-// Agent pr in project sma_suprimentos
+// Agent water_agent in project sma_suprimentos
 
 /* Initial beliefs and rules */
 
-plays(initiator, c).
-
 /* Initial goals */
 
+!start.
 
 /* Plans */
 
-+plays(initiator, In) : .my_name(Me)
-	<- .send(In, tell, introduction(participant, Me)).
-	
-+cfp(CNPId, Task)[source(A)] : plays(initiator, A)
-	<- .send(A, tell, refuse(CNPId)).
++!start : true <- .print("hello world.").
 
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }
