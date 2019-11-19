@@ -2,27 +2,35 @@
 
 package sma_suprimentos;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import cartago.*;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import cartago.Artifact;
+import cartago.OPERATION;
+import cartago.OpFeedbackParam;
 import inc.Suprimento;
+import inc.dao.SuprimentoDAO;
+import inc.dao.jpa.SuprimentoJPADAO;
 
 public class Estoque extends Artifact {
 	
-	private List<Suprimento> suprimentos = new ArrayList<Suprimento>();
+	void init() {
+		EntityManagerFactory emf =	Persistence.createEntityManagerFactory("dev");
+		EntityManager em = emf.createEntityManager();
+		
+		em.close();
+	}
 	
 	@OPERATION
 	void loadSuprimentos() {
-		Suprimento suprimento = new Suprimento("cerveja", 10, 3);
-		Suprimento suprimento2 = new Suprimento("arroz", 3, 5);
-		Suprimento suprimento3 = new Suprimento("feijão", 10, 4);
-		Suprimento suprimento4 = new Suprimento("açúcar", 4, 6);
+		SuprimentoDAO suprimentoDAO = new SuprimentoJPADAO();
+		List<Suprimento> suprimentos = suprimentoDAO.findAll();
+		suprimentoDAO.close();
 		
-		suprimentos.addAll(Arrays.asList(suprimento, suprimento2, suprimento3, suprimento4));
-		
-		for (Suprimento s : suprimentos) {
+		for(Suprimento s : suprimentos) {
 			signal("suprimento", s.getNome(), s.getQuantidadeEstoque(), s.getQuantidadeMinima());
 		}
 	}
@@ -30,20 +38,25 @@ public class Estoque extends Artifact {
 	@OPERATION
 	void addSuprimento(String nome, Integer quantidadeEstoque, Integer quantidadeMinima) {
 		Suprimento suprimento = new Suprimento(nome, quantidadeEstoque, quantidadeMinima);
-		suprimentos.add(suprimento);
+		
+		SuprimentoDAO suprimentoDAO = new SuprimentoJPADAO();
+		
+		suprimentoDAO.beginTransaction();
+		suprimentoDAO.save(suprimento);
+		suprimentoDAO.commit();
 		
 		signal("suprimento", suprimento.getNome(), suprimento.getQuantidadeEstoque(), suprimento.getQuantidadeMinima());
 	}
 	
-	@OPERATION(guard="suprimentosAvailable")
-	void removeSuprimento(OpFeedbackParam<Object> res)  {
+	@OPERATION
+	void removeSuprimento(Integer id, OpFeedbackParam<Object> res)  {
+		SuprimentoDAO suprimentoDAO = new SuprimentoJPADAO();
 		
+		suprimentoDAO.beginTransaction();
+		suprimentoDAO.deleteById(id);
+		suprimentoDAO.commit();
 	}
 	
-	@GUARD
-	boolean suprimentosAvailable(OpFeedbackParam<Object> res){
-		return suprimentos.size() > 0;
-	}
-	
+
 }
 

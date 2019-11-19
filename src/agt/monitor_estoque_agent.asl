@@ -11,6 +11,7 @@
 +!start : true 
 	<-	makeArtifact("Estoque", "sma_suprimentos.Estoque", [], Estoque);
 		focus(Estoque);
+		.wait(4000)
 		loadSuprimentos[artifact_id(Estoque)].
 		
 +suprimento(S, E, M) : E <= M
@@ -23,11 +24,12 @@
 
 +!notifyManager(S, E, M)
 	<-	println("Enviado mensagem para gerente...");
-		.send(manager_agent, tell, lowStock(S, E, M)).
+		.send(manager_agent, tell, lowStock(S, E, M));
+		.wait(4000).
 		
-+delivered(beer, Qtd, OrderId)[source(supermarket)] : true
-	<-	+available(beer, fridge);
-		!has(owner, beer).
+//+delivered(beer, Qtd, OrderId)[source(supermarket)] : true
+//	<-	+available(beer, fridge);
+//		!has(owner, beer).
 				
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

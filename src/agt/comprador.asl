@@ -4,37 +4,35 @@
 
 all_proposals_received(CNPId) :- .count(introduction(participant, _), NP) &
 	.count(propose(CNPId, _), NO) &
-	.count(refuse(CNPId, _), NR) & 
+	.count(refuse(CNPId), NR) & 
 	NP = NO + NR.
 
 /* Initial goals */
 
 /* Plans */
 
-+!startCNP(Id, Object) 	
-	<-	.wait(2000);
-		+cnp_state(Id, propose);
++startCNP(CNPId, Suprimento, Qtd) 	
+	<-	+cnp_state(CNPId, propose);
 		.findall(Name, introduction(participant, Name), LP);
-		.print("Enviando CFP para ", LP);
-		.send(LP, tell, cfp(Id, Object));
-		.concat("+!contract(", Id ,")", Event).
-//		.at("agora +4 segundos", Event).
+		.print("Enviando CFP ", CNPId, " para ", LP);
+		.send(LP, tell, cfp(CNPId, Suprimento, Qtd)).
 
-@r1 +propose(CNPId, Offer) : cnp_state(CNPId, propose) & all_proposals_received(CNPId)
+@r1 +propose(CNPId, Total) : cnp_state(CNPId, propose) & all_proposals_received(CNPId)
 	<-	!contract(CNPId).	
 
 @r2 +refuse(CNPId) : cnp_state(CNPId, propose) & all_proposals_received(CNPId)
 	<- !contract(CNPId).
 	
-@lc1[atomic] +!contract(CNPId) : cnp_state(CNPId, propose)
+	
++!contract(CNPId) : cnp_state(CNPId, propose)
 	<- 	-+cnp_state(CNPId, contract);
 		.findall(offer(O,A), propose(CNPId, O)[source(A)], L);
 		.print("As ofertas são", L);
 		L \== [];
 		.min(L, offer(WOf, WAg));
-		.print("Ganhador é ", WAg, " com ", WOf);
+		.print("Ganhador é ", WAg, " com ", WOf, " R$.");
 		!announce_result(CNPId, L, WAg);
-		-+cnp_state(Id, finished).
+		-+cnp_state(CNPId, finished).
 		
 @lc2 +!contract(CNPId).
 

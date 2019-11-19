@@ -2,26 +2,53 @@
 
 /* Initial beliefs and rules */
 
-price(Task, X) :- .random(R) & X = (10 * R) + 100.
+price(Suprimento, Qtd, Total) :- oferta(Suprimento, Valor) & Total = Valor * Qtd.
 
 /* Initial goals */
 
-plays(initiator, comprador).
+!start.
+
+/* Plans */
+
++!start <-
+	?setup(Deposito).
+
++?setup(Light)	: .my_name(Me) 
+	<-	.concat("Deposito", Me, DepositoId);
+		+deposito(DepositoId);
+		makeArtifact(DepositoId, "sma_suprimentos.FornecedorDeposito", [], Deposito);
+		focus(Deposito);
+		loadOfertas(Me)[artifact_name(DepositoId)];
+		+plays(initiator, comprador).
+	
+-?setup(Tv) : deposito(DepositoId) <-
+	lookupArtifact(DepositoId, Deposito).
 
 /* Plans */
 
 +plays(initiator, In) : .my_name(Me)
 	<- .send(In, tell, introduction(participant, Me)).
 	
-@c1 +cfp(CNPId, Task)[source(A)] : plays(initiator, A) & price(Task, Offer)
-	<- +proposal(CNPId, Task, Offer);
-		.send(A, tell, propose(CNPId, Offer)). 
-		
-@r1 +accept_proposal(CNPId) : proposal(CNPId, Task, Offer)
-	<- .print("Minha proposta ", Offer, " ganhou CNP ", CNPId, " para ", Task, "!").
++oferta(Suprimento, Valor)[artifact_name(Deposito, DepositoId)]: true 
+	<- 	+oferta(Suprimento, Valor);
+		.print("Novo produto: ", Suprimento, ", valor ", Valor, " R$.").
+	
+@c1 
++cfp(CNPId, Suprimento, Qtd)[source(A)] : plays(initiator, A) & price(Suprimento, Qtd, Total)
+	<-	+proposal(CNPId, Suprimento, Total);
+		.send(A, tell, propose(CNPId, Total)). 
 
-@r2 +reject_proposal(CNPId) 
-	<- .print("I lost CNP ", CNPId, ".");
+@c2	
++cfp(CNPId, Suprimento, Qtd)[source(A)] : true
+   <- .send(A, tell, refuse(CNPId)).
+		
+@r1 
++accept_proposal(CNPId) : proposal(CNPId, Suprimento, Total)
+	<-	.print("Minha proposta ", Total, " R$ ganhou CNP ", CNPId, " para venda de ", Suprimento, "!").
+
+@r2 
++reject_proposal(CNPId) 
+	<- 	.print("Eu perdi CNP ", CNPId, ".");
 		-proposal(CNPId,_,_). 
 	
 { include("$jacamoJar/templates/common-cartago.asl") }

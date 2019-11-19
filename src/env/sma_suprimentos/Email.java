@@ -29,7 +29,7 @@ public class Email extends Artifact {
 			await_time(1000);
 			if (suprimentosBuy.size() >= 1) {
 				int index = random.nextInt(suprimentosBuy.size());
-				signal("buy", suprimentosBuy.get(index));
+				signal("buy", Integer.valueOf(suprimentosBuy.get(index)), random.nextInt(10));
 				suprimentosBuy.remove(index);
 				await_time(random.nextInt(7000));
 			}

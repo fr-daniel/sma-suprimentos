@@ -15,11 +15,14 @@
 mas sma_suprimentos {
 
 	agent monitor_estoque_agent
+	agent monitor_agua_agent
 	agent manager_agent
 	agent comprador
-	agent fornecedor {
-		instances: 5
-	}
+	agent sao_geraldo : fornecedor.asl
+	agent pinheiro : fornecedor.asl
+	agent dinal : fornecedor.asl
+	agent cicerto_bertoldo : fornecedor.asl
+	agent estrela : fornecedor.asl
     
 }
 
