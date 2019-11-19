@@ -31,14 +31,16 @@ last_permission_id(0).
 		+permission(PermissionId, S);
 		println("Aguardando aprovação para comprar do suprimento ", S, ".").
 
-+?last_permission_id(N) 
-	<- 	last_permission_id(P);
-	 	N = P.
++?last_permission_id(N): last_permission_id(P)
+	<- 	N = P.
 
 +buy(Id, Qtd): permission(Id, S)
-	<- .print("Recebi autorização para compra do suprimento: ", Id)
-	.send(comprador, tell, startCNP(Id, S, Qtd)).
+	<- 	+buy(Id, Qtd);
+		.print("Recebi autorização para compra de ", Qtd, " unidades do suprimento: ", Id)
+		.send(comprador, tell, startCNP(Id, S, Qtd)).
 
++delivered(Id)[source(comprador)] : buy(Id, Qtd) & permission(Id, S)
+	<-	.print("Produto ", S  ," comprado e estoque atualizado em mais ", Qtd, " unidades.").
 	 	
 { include("$jacamoJar/templates/common-cartago.asl") }
 { include("$jacamoJar/templates/common-moise.asl") }

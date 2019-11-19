@@ -3,9 +3,9 @@
 /* Initial beliefs and rules */
 
 all_proposals_received(CNPId) :- .count(introduction(participant, _), NP) &
-	.count(propose(CNPId, _), NO) &
-	.count(refuse(CNPId), NR) & 
-	NP = NO + NR.
+	.count(propose(CNPId, _)[source(A)], NO) &
+	.count(refuse(CNPId)[source(A)], NR) & 
+	NP == NO + NR.
 
 /* Initial goals */
 
@@ -22,7 +22,6 @@ all_proposals_received(CNPId) :- .count(introduction(participant, _), NP) &
 
 @r2 +refuse(CNPId) : cnp_state(CNPId, propose) & all_proposals_received(CNPId)
 	<- !contract(CNPId).
-	
 	
 +!contract(CNPId) : cnp_state(CNPId, propose)
 	<- 	-+cnp_state(CNPId, contract);
@@ -43,6 +42,7 @@ all_proposals_received(CNPId) :- .count(introduction(participant, _), NP) &
 
 +!announce_result(CNPId, [offer(O, WAg) | T], WAg)
 	<- .send(WAg, tell, accept_proposal(CNPId));
+		.send(manager_agent, tell, delivered(CNPId));
 		!announce_result(CNPId, T, WAg).
 
 +!announce_result(CNPId,[offer(O, LAg) | T], WAg)
